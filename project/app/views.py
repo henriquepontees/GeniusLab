@@ -30,3 +30,8 @@ def solicitar_emprestimo(request, livro_id):
     else:
         messages.error(request, "Não foi possível solicitar o empréstimo, o livro não está disponível.")
     return redirect('lista_livros')
+
+@login_required
+def relatorio_emprestimos(request):
+    emprestimos_usuario = Emprestimo.objects.filter(usuario=request.user).order_by('-data_emprestimo')
+    return render(request, 'app/relatorio_emprestimos.html', {'emprestimos': emprestimos_usuario})
