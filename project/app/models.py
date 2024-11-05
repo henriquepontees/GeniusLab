@@ -90,7 +90,7 @@ class Devolucao(models.Model):
         Emprestimo,
         on_delete=models.CASCADE,
         verbose_name="Empréstimo",
-        limit_choices_to={'status': 'EM_ABERTO'}
+        limit_choices_to={'status__in': ['APROVADO', 'PENDENTE']}
     )
     data_devolucao = models.DateField(default=date.today, verbose_name="Data de Devolução")
     observacoes = models.TextField(blank=True, null=True, verbose_name="Observações")
@@ -102,7 +102,14 @@ class Devolucao(models.Model):
         return f"Devolução do empréstimo ID {self.emprestimo.id} para o livro '{self.emprestimo.livro}'"
 
     def save(self, *args, **kwargs):
+        # Verifica se a data de devolução é válida
+        if self.data_devolucao < self.emprestimo.data_emprestimo:
+            raise ValidationError("A data de devolução não pode ser anterior à data do empréstimo.")
+        
         # Registra a devolução, conclui o empréstimo e atualiza a disponibilidade do livro
-        if self.emprestimo.status == 'EM_ABERTO':
-            self.emprestimo.concluir_emprestimo()
+        if self.emprestimo.status in ['APROVADO', 'PENDENTE']:
+            self.emprestimo.concluir_emprestimo()  # Conclui o empréstimo
+            self.emprestimo.livro.quantidade_disponivel += 1  # Atualiza a quantidade disponível do livro
+            self.emprestimo.livro.save()  # Salva a alteração no livro
+
         super().save(*args, **kwargs)
