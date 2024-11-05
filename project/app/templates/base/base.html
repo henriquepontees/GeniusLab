@@ -16,7 +16,10 @@
   <style></style>
 </head>
 <body>
-  {% include 'base/nav.html' %}
+  {% if request.path != '/' %}
+      {% include 'base/nav.html' %}
+  {% endif %}
+  
   {% block content %}{% endblock %}
 
   <!-- Bootstrap Bundle JS -->
