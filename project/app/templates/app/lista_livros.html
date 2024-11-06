@@ -1,0 +1,49 @@
+<!-- templates/livros/lista_livros.html -->
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Livros Disponíveis</h2>
+    
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-3" style="max-width: 65rem;">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered mx-auto text-center" style="max-width: 65rem;">
+            <thead>
+                <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Autor</th>
+                    <th scope="col">Ano</th>
+                    <th scope="col">Gênero</th>
+                    <th scope="col">Disponível</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livro in livros %}
+                    <tr>
+                        <td>{{ livro.titulo }}</td>
+                        <td>{{ livro.autor }}</td>
+                        <td>{{ livro.ano_publicacao }}</td>
+                        <td>{{ livro.genero }}</td>
+                        <td>{{ livro.quantidade_disponivel }}</td>
+                        <td>
+                            <a href="{% url 'solicitar_emprestimo' livro.id %}" class="btn btn-primary btn-sm">
+                                Solicitar Empréstimo
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">Nenhum livro disponível.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
